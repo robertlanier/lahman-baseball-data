@@ -51,7 +51,15 @@ label players with position OF as "Outfield", those with position "SS", "1B", "2
 and those with position "P" or "C" as "Battery".
 Determine the number of putouts made by each of these three groups in 2016. */
 
-
+SELECT 	CASE WHEN pos = 'OF' THEN 'Outfield' -- Outfield total putouts 29560
+			 WHEN pos = 'P' THEN 'Battery' -- Battery total putouts 41424
+			 WHEN pos = 'C' THEN 'Battery'
+			 ELSE 'Infield' END AS player_groups, -- Infield total putouts 58934
+		SUM(po) AS total_putouts
+FROM fielding
+WHERE yearid = 2016
+GROUP BY player_groups
+ORDER BY total_putouts DESC
 
 /* 5. Find the average number of strikeouts per game by decade since 1920.
 Round the numbers you report to 2 decimal places.
