@@ -11,15 +11,16 @@ FROM teams -- yearly stats and standings
 How many games did he play in? 1 game
 What is the name of the team for which he played? St. Louis Browns */
 
-SELECT 	nameFirst,
-		nameLast,
-		height,
+SELECT 	DISTINCT
+		p.nameFirst,
+		p.nameLast,
+		p.height,
 		t.name,
 		a.g_all
 FROM people AS p -- Player names, DOB, and biographical info
-LEFT JOIN appearances AS a
+LEFT JOIN appearances AS a -- details on the positions a player appeared at
 ON p.playerid = a.playerid
-LEFT JOIN teams AS t
+LEFT JOIN teams AS t -- yearly stats and standings
 ON a.teamid = t.teamid
 WHERE height =
 		(SELECT MIN(height)
@@ -30,7 +31,20 @@ Create a list showing each player’s first and last names as well as the total 
 Sort this list in descending order by the total salary earned.
 Which Vanderbilt player earned the most money in the majors? */
 
-
+SELECT	p.nameFirst AS first_name,
+		p.nameLast AS last_name,
+		SUM(sal.salary) AS total_salary_earned
+FROM people AS p -- biological info
+LEFT JOIN collegeplaying AS c -- college info
+ON p.playerid = c.playerid
+LEFT JOIN schools AS s -- college names
+ON c.schoolid = s.schoolid
+LEFT JOIN salaries AS sal -- salary info
+ON p.playerid = sal.playerid
+WHERE schoolname = 'Vanderbilt University'
+		AND sal.salary IS NOT NULL
+GROUP BY p.playerid
+ORDER BY SUM(sal.salary) DESC
 
 /* 4. Using the fielding table, group players into three groups based on their position:
 label players with position OF as "Outfield", those with position "SS", "1B", "2B", and "3B" as "Infield", 
