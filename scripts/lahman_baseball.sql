@@ -5,7 +5,8 @@ FROM allstarfull
 
 SELECT 	MIN(yearid), -- 1871
 		MAX(yearid)  -- 2016
-FROM teams -- yearly stats and standings
+FROM teams; -- yearly stats and standings
+
 
 /* 2. Name and height of the shortest player in the database. Eddie Gaedel height 43
 How many games did he play in? 1 game
@@ -24,7 +25,8 @@ LEFT JOIN teams AS t -- yearly stats and standings
 ON a.teamid = t.teamid
 WHERE height =
 		(SELECT MIN(height)
-		FROM people)
+		FROM people);
+
 
 /* 3. Find all players in the database who played at Vanderbilt University.
 Create a list showing each player’s first and last names as well as the total salary they earned in the major leagues.
@@ -44,7 +46,8 @@ ON p.playerid = sal.playerid
 WHERE schoolname = 'Vanderbilt University'
 		AND sal.salary IS NOT NULL
 GROUP BY p.playerid
-ORDER BY SUM(sal.salary) DESC
+ORDER BY SUM(sal.salary) DESC;
+
 
 /* 4. Using the fielding table, group players into three groups based on their position:
 label players with position OF as "Outfield", those with position "SS", "1B", "2B", and "3B" as "Infield", 
@@ -59,7 +62,8 @@ SELECT 	CASE WHEN pos = 'OF' THEN 'Outfield' -- Outfield total putouts 29560
 FROM fielding
 WHERE yearid = 2016
 GROUP BY player_groups
-ORDER BY total_putouts DESC
+ORDER BY total_putouts DESC;
+
 
 /* 5. Find the average number of strikeouts per game by decade since 1920.
 Round the numbers you report to 2 decimal places.
@@ -82,15 +86,27 @@ SELECT 	ROUND(SUM(so)::numeric/SUM(g), 2) AS avg_so_per_g, -- Average strikeouts
 FROM teams -- yearly stats and standings
 WHERE yearid >= 1920
 GROUP BY decades
-ORDER BY decades
+ORDER BY decades;
 
 
 /* 6. Find the player who had the most success stealing bases in 2016, 
 where success is measured as the percentage of stolen base attempts which are successful.
 (A stolen base attempt results either in a stolen base or being caught stealing.)
-Consider only players who attempted at least 20 stolen bases. */
+Consider only players who attempted at least 20 stolen bases.
+ANS: Larry Gardner at 87% */
 
-
+SELECT	p.nameFirst,
+		p.nameLast,
+		b.sb, -- Successful stolen bases
+		ROUND(b.cs::numeric / (b.sb + b.cs), 2) AS perc_stolen_success
+FROM batting AS b -- post-season batting stats
+LEFT JOIN people AS p -- player bio
+ON b.playerid = p.playerid
+WHERE b.cs >= 20 -- players who attempted at least 20 stolen bases
+	AND ROUND(b.cs::numeric / (b.sb + b.cs), 2) = 
+		(SELECT MAX(ROUND(cs::numeric / (sb + cs), 2))
+			FROM batting
+			WHERE cs >= 20); --players who attempted at least 20 stolen bases
 
 
 /* 7. From 1970 – 2016, what is the largest number of wins for a team that did not win the world series?
