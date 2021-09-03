@@ -1,6 +1,3 @@
-SELECT *
-FROM allstarfull
-
 -- 1. What range of years for baseball games played does the provided database cover? 1871 - 2016
 
 SELECT 	MIN(yearid), -- 1871
@@ -12,7 +9,7 @@ FROM teams; -- yearly stats and standings
 How many games did he play in? 1 game
 What is the name of the team for which he played? St. Louis Browns */
 
-SELECT 	DISTINCT
+SELECT	DISTINCT
 		p.nameFirst,
 		p.nameLast,
 		p.height,
@@ -35,7 +32,7 @@ Which Vanderbilt player earned the most money in the majors? */
 
 SELECT	p.nameFirst AS first_name,
 		p.nameLast AS last_name,
-		SUM(sal.salary) AS total_salary_earned
+		SUM(DISTINCT sal.salary) AS total_salary_earned
 FROM people AS p -- biological info
 LEFT JOIN collegeplaying AS c -- college info
 ON p.playerid = c.playerid
@@ -71,7 +68,8 @@ Do the same for home runs per game. Do you see any trends? */
 
 SELECT 	ROUND(SUM(so)::numeric/SUM(g), 2) AS avg_so_per_g, -- Average strikeouts per game
 		ROUND(SUM(hr)::numeric/SUM(g), 2) AS avg_hr_per_g, -- Average strikeouts per game
-		CASE
+		yearid/10 * 10 AS decade
+		/*CASE
 			WHEN yearid BETWEEN 1920 AND 1929 THEN '1920s'
 			WHEN yearid BETWEEN 1930 AND 1939 THEN '1930s'
 			WHEN yearid BETWEEN 1940 AND 1949 THEN '1940s'
@@ -82,11 +80,11 @@ SELECT 	ROUND(SUM(so)::numeric/SUM(g), 2) AS avg_so_per_g, -- Average strikeouts
 			WHEN yearid BETWEEN 1990 AND 1999 THEN '1990s'
 			WHEN yearid BETWEEN 2000 AND 2009 THEN '2000s'
 			WHEN yearid BETWEEN 2010 AND 2019 THEN '2010s'
-			ELSE 'Before 1920s' END AS decades
+			ELSE 'Before 1920s' END AS decade */
 FROM teams -- yearly stats and standings
 WHERE yearid >= 1920
-GROUP BY decades
-ORDER BY decades;
+GROUP BY decade
+ORDER BY decade;
 
 
 /* 6. Find the player who had the most success stealing bases in 2016, 
