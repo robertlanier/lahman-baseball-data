@@ -96,15 +96,15 @@ ANS: Larry Gardner at 87% */
 SELECT	p.nameFirst,
 		p.nameLast,
 		b.sb, -- Successful stolen bases
-		ROUND(b.cs::numeric / (b.sb + b.cs), 2) AS perc_stolen_success
+		ROUND(b.sb::numeric / (b.sb + b.cs), 2) AS perc_stolen_success
 FROM batting AS b -- post-season batting stats
 LEFT JOIN people AS p -- player bio
 ON b.playerid = p.playerid
-WHERE b.cs >= 20 -- players who attempted at least 20 stolen bases
-	AND ROUND(b.cs::numeric / (b.sb + b.cs), 2) = 
-		(SELECT MAX(ROUND(cs::numeric / (sb + cs), 2))
+WHERE b.sb + b.cs >= 20 AND b.yearid = '2016'-- players who attempted at least 20 stolen bases in 2016
+	AND ROUND(b.sb::numeric / (b.sb + b.cs), 2) = 
+		(SELECT MAX(ROUND(sb::numeric / (sb + cs), 2))
 			FROM batting
-			WHERE cs >= 20); --players who attempted at least 20 stolen bases
+			WHERE sb + cs >= 20 AND yearid = '2016'); --players who attempted at least 20 stolen bases in 2016
 
 
 /* 7. From 1970 – 2016, what is the largest number of wins for a team that did not win the world series?
